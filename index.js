@@ -1,9 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const connectToDB = require("./db");
-const Usermodel = require("./schemas/userSchema");
-
-
+const userRouter = require("./routes/userRoutes");
 
 const app = express();
 const PORT = 999;
@@ -13,14 +11,7 @@ app.use(express.json());
 
 connectToDB();
 
-app.get("/", async (req, res) => {
-  try{
-  const data = await Usermodel.create({firstName: "easlbeg", email: 'newuser@gmail.com', password: "123456"});
-  res.json(data);
-  } catch (err) {
-    res.status (500).json({ error: err.message });
-  }
-});
+app.use("/api/users", userRouter);
 
 app.listen(PORT, () => {
   console.log("API listening on http://localhost:" + PORT);
