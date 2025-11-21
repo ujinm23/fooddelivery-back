@@ -1,53 +1,97 @@
 const User = require("../../schemas/userSchema");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
 
-// ---------------- SIGN UP ----------------
-const signUp = async (req, res) => {
+// ---------------- STEP 1: CHECK EMAIL ----------------
+const checkEmail = async (req, res) => {
   try {
-    console.log("REQ BODY:", req.body); // 📌 DEBUG — email ирж байна уу?
+    const { email } = req.body;
 
-    const { firstName, email, password } = req.body;
+    console.log("STEP1 EMAIL:", email);
 
-    // ---------------- VALIDATION ----------------
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: "Email ирсэнгүй",
+        message: "Имэйл ирсэнгүй",
+      });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Имэйл формат буруу байна",
+      });
+    }
+
+    const existed = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
+
+    if (existed) {
+      return res.status(409).json({
+        success: false,
+        message: "Имэйл бүртгэлтэй байна",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Имэйлийг ашиглаж болно",
+    });
+  } catch (err) {
+    console.log("CHECK EMAIL ERROR:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// ---------------- STEP 2: SIGN UP ----------------
+const signUp = async (req, res) => {
+  try {
+    console.log("STEP2 BODY:", req.body);
+
+    const { firstName, email, password } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Имэйл шаардлагатай",
       });
     }
 
     if (!password) {
       return res.status(400).json({
         success: false,
-        message: "Password ирсэнгүй",
+        message: "Нууц үг шаардлагатай",
       });
     }
 
-    // ---------------- CHECK IF USER EXISTS ----------------
-    const existed = await User.findOne({ email: email.toLowerCase() });
+    const existed = await User.findOne({
+      email: email.toLowerCase().trim(),
+    });
 
     if (existed) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
-        message: "Имэйл аль хэдийн бүртгэлтэй",
+        message: "Имэйл бүртгэлтэй байна",
       });
     }
 
-    // ---------------- HASH PASSWORD ----------------
     const hashed = await bcrypt.hash(password, 12);
 
     const user = await User.create({
       firstName: firstName || "",
-      email: email.toLowerCase(),
+      email: email.toLowerCase().trim(),
       password: hashed,
     });
 
-    // ---------------- JWT TOKENS ----------------
-    const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "15m",
-    });
+    // JWT
+    const accessToken = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
 
     const refreshToken = jwt.sign(
       { _id: user._id },
@@ -68,7 +112,7 @@ const signUp = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log("SIGN-UP ERROR:", err); // 📌 DEBUG
+    console.log("SIGN-UP ERROR:", err);
     res.status(500).json({ success: false, message: err.message });
   }
 };
@@ -85,28 +129,34 @@ const signIn = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user)
-      return res
-        .status(400)
-        .json({ success: false, message: "Имэйл эсвэл нууц үг буруу" });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Имэйл эсвэл нууц үг буруу",
+      });
+    }
 
     const match = await bcrypt.compare(password, user.password);
-    if (!match)
-      return res
-        .status(400)
-        .json({ success: false, message: "Имэйл эсвэл нууц үг буруу" });
 
-    const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "15m",
-    });
+    if (!match) {
+      return res.status(400).json({
+        success: false,
+        message: "Имэйл эсвэл нууц үг буруу",
+      });
+    }
+
+    const accessToken = jwt.sign(
+      { _id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
 
     const refreshToken = jwt.sign(
       { _id: user._id },
       process.env.REFRESH_SECRET,
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
 
     res.json({
@@ -128,6 +178,7 @@ const signIn = async (req, res) => {
 };
 
 module.exports = {
+  checkEmail,
   signUp,
   signIn,
 };
