@@ -6,8 +6,7 @@ const UserSchema = new Schema(
     firstName: {
       type: String,
       default: "",
-      // minLength: [2, "Нэр дор хаяж 2 үсэгтэй байх ёстой"],
-      // maxLength: [50, "Нэр 50 үсгээс ихгүй байх ёстой"],
+
       trim: true,
     },
 
