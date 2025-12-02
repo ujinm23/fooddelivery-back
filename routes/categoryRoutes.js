@@ -1,11 +1,11 @@
 const express = require("express");
 const FoodCategory = require("../schemas/foodCategorySchema");
-
+const Food = require("../schemas/foodSchema");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    const categories = await FoodCategory.find();
+    const categories = await FoodCategory.find().populate("dishes"); // ⬅ хоосон биш болгох
     res.send(categories);
   } catch (err) {
     res.status(500).send({ error: err.message });
@@ -14,7 +14,9 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    const category = await FoodCategory.findById(req.params.id);
+    const category = await FoodCategory.findById(req.params.id).populate(
+      "dishes"
+    );
     res.send(category);
   } catch (err) {
     res.status(404).send({ error: "Category not found" });
@@ -61,9 +63,20 @@ router.patch("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    await FoodCategory.findByIdAndDelete(req.params.id);
-    res.send({ message: "Category deleted" });
+    const categoryId = req.params.id;
+
+    // 1️⃣ Энэ категорид харьяалагдсан бүх хоолыг устгана
+    await Food.deleteMany({ category: categoryId });
+
+    // 2️⃣ Дараа нь категори устгана
+    await FoodCategory.findByIdAndDelete(categoryId);
+
+    res.send({
+      message: "Category and related foods deleted successfully",
+      categoryId,
+    });
   } catch (err) {
+    console.log("DELETE ERROR:", err);
     res.status(400).send({ error: err.message });
   }
 });
