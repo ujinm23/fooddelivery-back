@@ -2,20 +2,18 @@ const express = require("express");
 const router = express.Router();
 const FoodOrder = require("../schemas/foodOrderSchema");
 
-// const requireAdmin = require("../middleware/requireAdmin");
-// const requireRestaurant = require("../middleware/requireRestaurant");
-// const requireDriver = require("../middleware/requireDriver");
-// const requireUser = require("../middleware/requireUser");
-
-router.get("/", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const orders = await FoodOrder.find()
-      .populate("user", "firstName email phoneNumber")
+    const order = await FoodOrder.findById(req.params.id)
+      .populate("user", "firstName email")
+      .populate("foodOrderItems.food", "name price image");
 
-      .populate("foodOrderItems.food", "name price image")
-      .sort({ createdAt: -1 });
+    if (!order)
+      return res
+        .status(404)
+        .json({ success: false, message: "Захиалга олдсонгүй" });
 
-    res.json({ success: true, count: orders.length, data: orders });
+    res.json({ success: true, data: order });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -50,12 +48,24 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    req.body.user = req.user._id;
+    const { user, foodOrderItems, totalPrice } = req.body;
 
-    const order = await FoodOrder.create(req.body);
-    const populated = await FoodOrder.findById(order._id)
-      .populate("user", "firstName email")
-      .populate("foodOrderItems.food", "name price image");
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User is required" });
+    }
+
+    const order = await FoodOrder.create({
+      user,
+      foodOrderItems,
+      totalPrice,
+    });
+
+    const populated = await FoodOrder.findById(order._id).populate(
+      "foodOrderItems.food",
+      "name price image"
+    );
 
     res.status(201).json({
       success: true,

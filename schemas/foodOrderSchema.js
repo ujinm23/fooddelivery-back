@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 const foodOrderItemSchema = require("./foodOrderItemSchema");
-const FoodOrderStatusEnum = require("../utils/orderStatus");   
+const FoodOrderStatusEnum = require("../utils/orderStatus");
 
 const FoodOrderSchema = new Schema({
   user: {
@@ -8,15 +8,24 @@ const FoodOrderSchema = new Schema({
     ref: "User",
     required: true,
   },
-  foodOrderItems: [foodOrderItemSchema],  
-  totalPrice: { type: Number, required: true, min: 0 },
-  
+
+  foodOrderItems: {
+    type: [foodOrderItemSchema],
+    required: true,
+  },
+
+  totalPrice: {
+    type: Number,
+    required: true,
+    min: 0,
+  },
+
   status: {
     type: String,
-    enum: Object.values(FoodOrderStatusEnum),     
-    default: FoodOrderStatusEnum.PENDING          
+    enum: Object.values(FoodOrderStatusEnum),
+    default: FoodOrderStatusEnum.PENDING,
   },
-  
+
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
