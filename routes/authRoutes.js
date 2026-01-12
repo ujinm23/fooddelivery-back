@@ -21,6 +21,52 @@ router.post("/check-email", async (req, res) => {
 });
 // ------------------------------------------
 
+// SIGN UP
+router.post("/sign-up", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Email шалгах
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email болон password заавал оруулна уу" });
+    }
+
+    // Email аль хэдийн бүртгэлтэй эсэхийг шалгах
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Хэрэглэгч үүсгэх
+    const user = await User.create({
+      email,
+      password, // Одоогийн байдлаар hash хийхгүй (login-д шууд харьцуулж байгаа)
+    });
+
+    // Token үүсгэх
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Бүртгэл амжилттай үүслээ!",
+      token,
+      user: {
+        _id: user._id,
+        id: user._id,
+        email: user.email,
+        firstName: user.firstName,
+      },
+    });
+  } catch (err) {
+    console.error("Sign up error:", err);
+    res.status(500).json({ message: err.message || "Бүртгэл үүсгэхэд алдаа гарлаа" });
+  }
+});
+
 // LOGIN
 router.post("/login", async (req, res) => {
   console.log("REQ BODY ===>", req.body);
