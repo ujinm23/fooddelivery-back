@@ -20,6 +20,11 @@ const FoodOrderSchema = new Schema({
     min: 0,
   },
 
+  address: {
+    type: String,
+    trim: true,
+  },
+
   status: {
     type: String,
     enum: Object.values(FoodOrderStatusEnum),

@@ -12,7 +12,8 @@ router.get("/", async (req, res) => {
   if (userId) filter.user = userId;
 
   const orders = await FoodOrder.find(filter)
-    .populate("foodOrderItems.food", "name price image")
+    .populate("user", "firstName email address")
+    .populate("foodOrderItems.food", "foodName price image")
     .sort({ createdAt: -1 }); // ⭐ шинэ нь дээр
 
   res.json({ success: true, data: orders });
@@ -25,7 +26,7 @@ router.get("/:id", async (req, res) => {
   try {
     const order = await FoodOrder.findById(req.params.id)
       .populate("user", "firstName email")
-      .populate("foodOrderItems.food", "name price image");
+      .populate("foodOrderItems.food", "foodName price image");
 
     if (!order) {
       return res
@@ -44,7 +45,7 @@ router.get("/:id", async (req, res) => {
 ========================= */
 router.post("/", async (req, res) => {
   try {
-    const { user, foodOrderItems, totalPrice } = req.body;
+    const { user, foodOrderItems, totalPrice, address } = req.body;
 
     if (!user || !foodOrderItems?.length) {
       return res
@@ -56,11 +57,12 @@ router.post("/", async (req, res) => {
       user,
       foodOrderItems,
       totalPrice,
+      address,
     });
 
     const populated = await FoodOrder.findById(order._id)
       .populate("user", "firstName email")
-      .populate("foodOrderItems.food", "name price image");
+      .populate("foodOrderItems.food", "foodName price image");
 
     res.status(201).json({
       success: true,
@@ -98,7 +100,7 @@ router.patch("/:id/status", async (req, res) => {
       { new: true }
     )
       .populate("user", "firstName email")
-      .populate("foodOrderItems.food", "name price image");
+      .populate("foodOrderItems.food", "foodName price image");
 
     if (!order) {
       return res
