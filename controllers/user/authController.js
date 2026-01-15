@@ -99,6 +99,7 @@ const signUp = async (req, res) => {
       accessToken,
       refreshToken,
       user: {
+        _id: user._id,
         id: user._id,
         firstName: user.firstName,
         email: user.email,
@@ -156,10 +157,11 @@ const signIn = async (req, res) => {
       accessToken,
       refreshToken,
       user: {
+        _id: user._id,
         id: user._id,
         firstName: user.firstName,
         email: user.email,
-        role: user.role,
+        role: user.role || "user",
       },
     });
   } catch (err) {

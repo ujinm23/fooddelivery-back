@@ -58,7 +58,8 @@ router.post("/sign-up", async (req, res) => {
         _id: user._id,
         id: user._id,
         email: user.email,
-        firstName: user.firstName,
+        firstName: user.firstName || "",
+        role: user.role || "user",
       },
     });
   } catch (err) {
@@ -87,8 +88,11 @@ router.post("/login", async (req, res) => {
       success: true,
       token,
       user: {
+        _id: user._id,
         id: user._id,
         email: user.email,
+        firstName: user.firstName || "",
+        role: user.role || "user",
       },
     });
   } catch (err) {
