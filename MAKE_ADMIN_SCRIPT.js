@@ -8,26 +8,26 @@ console.log("🔍 Хэрэглэгч хайж байна:", email);
 fetch("https://foodapp-back-k58d.onrender.com/api/users")
   .then(res => res.json())
   .then(users => {
-    console.log("📋 Бүх хэрэглэгчид:", users);
+    console.log(" Бүх хэрэглэгчид:", users);
     
     const user = users.find(u => u.email === email);
     if (!user) {
-      console.log("❌ Хэрэглэгч олдсонгүй:", email);
-      console.log("💡 Бүх хэрэглэгчид:", users.map(u => u.email));
+      console.log("Хэрэглэгч олдсонгүй:", email);
+      console.log(" Бүх хэрэглэгчид:", users.map(u => u.email));
       return;
     }
     
-    console.log("✅ Хэрэглэгч олдлоо!");
+    console.log(" Хэрэглэгч олдлоо!");
     console.log("   Email:", user.email);
     console.log("   ID:", user._id);
     console.log("   Одоогийн Role:", user.role);
     
     if (user.role === "admin") {
-      console.log("ℹ️ Хэрэглэгч аль хэдийн admin эрхтэй байна");
+      console.log("ℹ Хэрэглэгч аль хэдийн admin эрхтэй байна");
       return;
     }
     
-    console.log("🔄 Admin эрх өгөж байна...");
+    console.log("Admin эрх өгөж байна...");
     
     // Admin эрх өгөх
     return fetch("https://foodapp-back-k58d.onrender.com/api/users/make-admin", {
@@ -42,17 +42,17 @@ fetch("https://foodapp-back-k58d.onrender.com/api/users")
   })
   .then(data => {
     if (data && data.success) {
-      console.log("✅ Admin эрх амжилттай өгөгдлөө!");
-      console.log("📝 Шинэ мэдээлэл:", data.user);
+      console.log(" Admin эрх амжилттай өгөгдлөө!");
+      console.log(" Шинэ мэдээлэл:", data.user);
       console.log("");
-      console.log("📌 Дараагийн алхмууд:");
+      console.log(" Дараагийн алхмууд:");
       console.log("   1. Logout хийх");
       console.log("   2. Login хийх (энэ email-ээр)");
       console.log("   3. /admin page харна уу");
     } else if (data) {
-      console.log("❌ Алдаа:", data.error || data);
+      console.log(" Алдаа:", data.error || data);
     }
   })
   .catch(err => {
-    console.error("❌ Алдаа гарлаа:", err);
+    console.error(" Алдаа гарлаа:", err);
   });

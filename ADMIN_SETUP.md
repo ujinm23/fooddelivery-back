@@ -189,8 +189,121 @@ fetch("https://foodapp-back-k58d.onrender.com/api/users")
 1. Backend API: `GET /api/users` - Бүх хэрэглэгчдийн жагсаалт
 2. MongoDB: `db.users.find({ email: "user@example.com" })` - Email-ээр хайх
 
+## Өөр хүнд Admin эрх өгөх
+
+### Арга 1: Script ашиглах (Хамгийн хурдан)
+
+1. **Terminal/Command Prompt нээх**
+2. **Backend directory руу орох:**
+   ```bash
+   cd C:\Users\Admin\food-app\foodapp-back
+   ```
+
+3. **Email-ээр admin эрх өгөх:**
+   ```bash
+   node scripts/makeAdminByEmail.js user@example.com
+   ```
+
+   **Жишээ:**
+   ```bash
+   node scripts/makeAdminByEmail.js john@gmail.com
+   ```
+
+4. **Үр дүн харах:**
+   - Хэрэглэгч олдвол admin эрх өгөгдөнө
+   - Хэрэглэгч олдохгүй бол бүх хэрэглэгчдийн жагсаалт харагдана
+
+### Арга 2: Browser Console (Production server дээр)
+
+1. **Website дээр F12 дарж Console нээх**
+2. **Дараах кодыг хуулаад email-ийг өөрчлөнө:**
+
+```javascript
+// Email-ийг энд өөрчлөнө
+const email = "user@example.com";
+
+console.log("🔍 Хэрэглэгч хайж байна:", email);
+
+fetch("https://foodapp-back-k58d.onrender.com/api/users")
+  .then(res => res.json())
+  .then(users => {
+    const user = users.find(u => u.email === email);
+    if (!user) {
+      console.log("❌ Хэрэглэгч олдсонгүй:", email);
+      console.log("💡 Бүх хэрэглэгчид:", users.map(u => u.email));
+      return;
+    }
+    
+    console.log("✅ Хэрэглэгч олдлоо!");
+    console.log("   Email:", user.email);
+    console.log("   ID:", user._id);
+    console.log("   Одоогийн Role:", user.role);
+    
+    if (user.role === "admin") {
+      console.log("ℹ️ Хэрэглэгч аль хэдийн admin эрхтэй байна");
+      return;
+    }
+    
+    console.log("🔄 Admin эрх өгөж байна...");
+    
+    return fetch("https://foodapp-back-k58d.onrender.com/api/users/make-admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: user._id })
+    });
+  })
+  .then(res => {
+    if (!res) return;
+    return res.json();
+  })
+  .then(data => {
+    if (data && data.success) {
+      console.log("✅ Admin эрх амжилттай өгөгдлөө!");
+      console.log("📝 Шинэ мэдээлэл:", data.user);
+      console.log("");
+      console.log("📌 Дараагийн алхмууд:");
+      console.log("   1. Хэрэглэгч logout/login хийх");
+      console.log("   2. /admin page харна уу");
+    } else if (data) {
+      console.log("❌ Алдаа:", data.error || data);
+    }
+  })
+  .catch(err => console.error("❌ Алдаа гарлаа:", err));
+```
+
+### Арга 3: MongoDB Compass
+
+1. **MongoDB Compass нээх**
+2. **users collection дээр очоод Find filter дээр:**
+   ```javascript
+   { "email": "user@example.com" }
+   ```
+3. **Олдсон хэрэглэгчийг дарж нээх**
+4. **`role` field-ийг `user` → `admin` болгох**
+5. **Update дарна**
+
+### Арга 4: MongoDB Shell
+
+```javascript
+// 1. Database сонгох
+use your_database_name
+
+// 2. Хэрэглэгч олох
+db.users.findOne({ email: "user@example.com" })
+
+// 3. Role-ийг admin болгох
+db.users.updateOne(
+  { email: "user@example.com" },
+  { $set: { role: "admin" } }
+)
+
+// 4. Шалгах
+db.users.findOne({ email: "user@example.com" })
+```
+
 ## Анхаарах зүйл
 
 - Admin эрх өгсний дараа хэрэглэгч logout/login хийх шаардлагатай
 - localStorage дээрх user мэдээлэл шинэчлэгдэхгүй байж магадгүй
 - Шинэчлэхийн тулд дахин login хийх эсвэл AuthContext-ийн updateUser ашиглах
+- Хэд хэдэн хүнд admin эрх өгөх бол script-ийг дахин ажиллуулах эсвэл MongoDB-д batch update хийх
