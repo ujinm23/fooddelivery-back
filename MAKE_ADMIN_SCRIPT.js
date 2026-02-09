@@ -5,7 +5,7 @@ const email = "ujinm23@gmail.com";
 
 console.log("🔍 Хэрэглэгч хайж байна:", email);
 
-fetch("https://foodapp-back-k58d.onrender.com/api/users")
+fetch("https://fooddelivery-back-qe16.onrender.com/api/users")
   .then((res) => res.json())
   .then((users) => {
     console.log(" Бүх хэрэглэгчид:", users);
