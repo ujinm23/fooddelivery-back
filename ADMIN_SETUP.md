@@ -1,6 +1,6 @@
 # Admin Эрх Өгөх Заавар
 
-## 🚀 Тодорхой Жишээ: enkhee123@gmail.com account-д admin эрх өгөх
+## 🚀 Тодорхой Жишээ: ujinm23@gmail.com account-д admin эрх өгөх
 
 ### Хамгийн хурдан арга (Browser Console):
 
@@ -8,7 +8,7 @@
 2. **Дараах кодыг хуулаад ажиллуулах:**
 
 ```javascript
-const email = "enkhee123@gmail.com";
+const email = "ujinm23@gmail.com";
 
 console.log("🔍 Хэрэглэгч хайж байна:", email);
 
@@ -53,7 +53,7 @@ fetch("https://foodapp-back-k58d.onrender.com/api/users")
       console.log("");
       console.log("📌 Дараагийн алхмууд:");
       console.log("   1. Logout хийх");
-      console.log("   2. Login хийх (enkhee123@gmail.com)");
+      console.log("   2. Login хийх (ujinm23@gmail.com)");
       console.log("   3. /admin page харна уу");
     } else if (data) {
       console.log("❌ Алдаа:", data.error || data);
@@ -78,7 +78,7 @@ fetch("https://foodapp-back-k58d.onrender.com/api/users")
 
 ```javascript
 // users collection дээр очоод Find filter дээр:
-{ "email": "enkhee123@gmail.com" }
+{ "email": "ujinm23@gmail.com" }
 ```
 
 ### Алхам 3: Role өөрчлөх

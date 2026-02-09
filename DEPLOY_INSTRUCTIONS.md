@@ -1,6 +1,7 @@
 # Production Server дээр Deploy хийх заавар
 
 ## Асуудал
+
 Backend код зассан ч production server (`https://foodapp-back-k58d.onrender.com`) дээр шинэчлэгдээгүй байна.
 
 ## Шийдэл
@@ -25,18 +26,21 @@ Backend код зассан ч production server (`https://foodapp-back-k58d.onr
 Хэрэв Render.com дээр auto-deploy идэвхжсэн бол:
 
 1. **Git status шалгах**
+
    ```bash
    cd C:\Users\Admin\food-app\foodapp-back
    git status
    ```
 
 2. **Changes commit хийх**
+
    ```bash
    git add .
    git commit -m "Fix: Add role field to login/signup response"
    ```
 
 3. **GitHub руу push хийх**
+
    ```bash
    git push origin main
    ```
@@ -47,6 +51,7 @@ Backend код зассан ч production server (`https://foodapp-back-k58d.onr
 ### Арга 3: Local дээр Test хийх (Хурдан)
 
 1. **Backend server ажиллуулах**
+
    ```bash
    cd C:\Users\Admin\food-app\foodapp-back
    npm start
@@ -62,9 +67,10 @@ Deploy хийсний дараа:
 
 1. **Browser дээр:**
    - Logout хийх
-   - Login хийх (`enkhee123@gmail.com`)
+   - Login хийх (`ujinm23@gmail.com`)
 
 2. **Console дээр шалгах:**
+
    ```javascript
    // Role: admin гэж харагдах ёстой
    ```

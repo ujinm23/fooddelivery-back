@@ -6,7 +6,7 @@ const checkUserRole = async () => {
     await connectToDB();
     console.log("✅ Database холбогдлоо\n");
 
-    const email = "enkhee123@gmail.com";
+    const email = "ujinm23@gmail.com";
     const user = await UserModel.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
@@ -19,7 +19,9 @@ const checkUserRole = async () => {
     console.log(`   First Name: ${user.firstName}`);
     console.log(`   ID: ${user._id}`);
     console.log(`   Role: ${user.role}`);
-    console.log(`   Is Admin: ${user.role === "admin" ? "✅ Тийм" : "❌ Үгүй"}`);
+    console.log(
+      `   Is Admin: ${user.role === "admin" ? "✅ Тийм" : "❌ Үгүй"}`,
+    );
     console.log("");
 
     if (user.role !== "admin") {

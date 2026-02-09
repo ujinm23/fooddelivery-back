@@ -9,19 +9,19 @@ const makeUserAdmin = async () => {
     console.log("✅ Database холбогдлоо");
 
     // Хэрэглэгч олох (email эсвэл firstName-ээр)
-    const searchTerm = "Enkhee123";
+    const searchTerm = "ujinm23";
     const user = await UserModel.findOne({
       $or: [
         { email: { $regex: searchTerm, $options: "i" } },
-        { firstName: { $regex: searchTerm, $options: "i" } }
-      ]
+        { firstName: { $regex: searchTerm, $options: "i" } },
+      ],
     });
 
     if (!user) {
       console.log("❌ Хэрэглэгч олдсонгүй:", searchTerm);
       console.log("💡 Бүх хэрэглэгчдийн жагсаалт:");
       const allUsers = await UserModel.find({}, "email firstName role");
-      allUsers.forEach(u => {
+      allUsers.forEach((u) => {
         console.log(`   - ${u.email} (${u.firstName}) - Role: ${u.role}`);
       });
       process.exit(1);
