@@ -12,7 +12,7 @@ const makeAdmin = async (req, res) => {
     const user = await UserModel.findByIdAndUpdate(
       userId,
       { role: UserRoleEnum.ADMIN },
-      { new: true }
+      { new: true },
     );
 
     if (!user) {
